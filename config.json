@@ -1,0 +1,80 @@
+{
+  "admin": {
+    "disabled": true
+  },
+  "logging": {
+    "logs": {
+      "default": {
+        "encoder": {
+          "format": "console"
+        },
+        "writer": {
+          "output": "file",
+          "filename": "/var/log/caddy/access.log"
+        },
+        "level": "INFO"
+      }
+    }
+  },
+  "apps": {
+    "http": {
+      "servers": {
+        "site": {
+          "listen": [
+            ":80"
+          ],
+          "routes": [
+            {
+              "match": [
+                {
+                  "path": [
+                    "/"
+                  ]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "static_response",
+                  "body": "Hi，Build from https://github.com/v03413/acg-faka-assets-cdn",
+                  "close": true
+                }
+              ]
+            },
+            {
+              "handle": [
+                {
+                  "handler": "headers",
+                  "response": {
+                    "set": {
+                      "Cache-Control": [
+                        "public, max-age=31536000"
+                      ],
+                      "Access-Control-Allow-Origin": [
+                        "*"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "handler": "encode",
+                  "encodings": {
+                    "gzip": {
+                      "level": 9
+                    }
+                  },
+                  "prefer": [
+                    "gzip"
+                  ]
+                },
+                {
+                  "handler": "file_server",
+                  "root": "/www"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}
